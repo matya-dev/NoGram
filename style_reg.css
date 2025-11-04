@@ -1,0 +1,418 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #383838;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 100%;
+    max-width: 450px;
+    margin-top: 20px;
+    position: absolute;
+    top: 20px;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.container.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+}
+
+.container.leaving {
+    opacity: 0;
+    transform: translateX(-100px);
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-wrapper {
+    position: relative;
+    display: inline-block;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+    max-width: 120px;
+    height: auto;
+    display: block;
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+}
+
+.logo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.15) 50%,
+        rgba(0, 0, 0, 0.3) 100%
+    );
+    border-radius: 20px;
+    pointer-events: none;
+}
+
+.logo-wrapper:hover .logo {
+    transform: scale(1.05);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.header p {
+    color: #aaa;
+    font-size: 16px;
+    transition: transform 0.3s ease 0.1s;
+}
+
+.container.active .header h1,
+.container.active .header p {
+    transform: translateY(0);
+}
+
+.container:not(.active) .header h1,
+.container:not(.active) .header p {
+    transform: translateY(20px);
+}
+
+.phone-section, .token-section {
+    background-color: #4C4C4C;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: transform 0.3s ease 0.2s;
+}
+
+.container.active .phone-section,
+.container.active .token-section {
+    transform: translateY(0);
+}
+
+.container:not(.active) .phone-section,
+.container:not(.active) .token-section {
+    transform: translateY(30px);
+}
+
+.country-row, .token-row {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #666;
+}
+
+.phone-row {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+}
+
+.country-info, .token-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.country-name {
+    font-size: 16px;
+    color: white;
+}
+
+.country-code {
+    font-weight: bold;
+    margin-right: 15px;
+    width: 40px;
+    font-size: 16px;
+}
+
+.phone-input {
+    background-color: #4C4C4C;
+    border: none;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    flex: 1;
+    padding: 5px 0;
+    width: 100%;
+}
+
+.phone-input::placeholder {
+    color: #aaa;
+}
+
+.continue-btn {
+    background-color: #1D9F7A;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 15px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: all 0.3s ease 0.3s;
+}
+
+.container.active .continue-btn {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.container:not(.active) .continue-btn {
+    transform: translateY(20px);
+    opacity: 0;
+}
+
+.continue-btn:hover {
+    background-color: #178066;
+    transform: translateY(-2px);
+}
+
+.token-login {
+    text-align: center;
+    color: #1D9F7A;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 30px;
+    transition: all 0.3s ease 0.4s;
+}
+
+.container.active .token-login {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.container:not(.active) .token-login {
+    transform: translateY(20px);
+    opacity: 0;
+}
+
+.token-login:hover {
+    color: #178066;
+    text-decoration: underline;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    color: #1D9F7A;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    padding: 10px 0;
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+.container.active .back-button {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.back-button:hover {
+    color: #178066;
+}
+
+.back-button svg {
+    margin-right: 8px;
+    transition: transform 0.3s ease;
+}
+
+.back-button:hover svg {
+    transform: translateX(-3px);
+}
+
+.footer {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-top: 20px;
+    transition: all 0.3s ease 0.5s;
+}
+
+.container.active .footer {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.container:not(.active) .footer {
+    transform: translateY(20px);
+    opacity: 0;
+}
+
+/* Стили для ввода токена */
+.token-inputs-container {
+    padding: 30px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.token-inputs {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.token-digit {
+    width: 60px;
+    height: 70px;
+    background-color: #4C4C4C;
+    border: 2px solid #666;
+    border-radius: 12px;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.token-digit:focus {
+    border-color: #1D9F7A;
+    background-color: rgba(29, 159, 122, 0.1);
+    transform: scale(1.05);
+}
+
+.token-digit.correct {
+    border-color: #1D9F7A;
+    background-color: rgba(29, 159, 122, 0.2);
+}
+
+.token-digit.incorrect {
+    border-color: #ff4444;
+    background-color: rgba(255, 68, 68, 0.2);
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.error-message {
+    color: #ff4444;
+    font-size: 14px;
+    margin-top: 15px;
+    padding: 0 15px;
+    display: none;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.error-message.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.toast {
+    position: fixed;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background-color: #ff4444;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: transform 0.4s ease;
+    font-weight: bold;
+    max-width: 90%;
+    text-align: center;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast.success {
+    background-color: #1D9F7A;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 15px;
+        min-height: 100vh;
+        justify-content: flex-start;
+    }
+    
+    .container {
+        max-width: 100%;
+        margin-top: 10px;
+    }
+    
+    .logo {
+        max-width: 100px;
+    }
+    
+    .logo-wrapper {
+        border-radius: 15px;
+    }
+    
+    .logo-overlay {
+        border-radius: 15px;
+    }
+    
+    .header h1 {
+        font-size: 22px;
+    }
+    
+    .header p {
+        font-size: 14px;
+    }
+    
+    .phone-input {
+        font-size: 16px;
+    }
+    
+    .token-digit {
+        width: 50px;
+        height: 60px;
+        font-size: 24px;
+    }
+    
+    .token-inputs {
+        gap: 10px;
+    }
+}
