@@ -109,7 +109,7 @@ body {
     transform: translateY(20px);
 }
 
-.phone-section, .token-section {
+.phone-section, .token-section, .code-section {
     background-color: #4C4C4C;
     border-radius: 10px;
     margin-bottom: 20px;
@@ -118,12 +118,14 @@ body {
 }
 
 .container.active .phone-section,
-.container.active .token-section {
+.container.active .token-section,
+.container.active .code-section {
     transform: translateY(0);
 }
 
 .container:not(.active) .phone-section,
-.container:not(.active) .token-section {
+.container:not(.active) .token-section,
+.container:not(.active) .code-section {
     transform: translateY(30px);
 }
 
@@ -173,7 +175,7 @@ body {
     color: #aaa;
 }
 
-.continue-btn {
+.continue-btn, .resend-btn {
     background-color: #1D9F7A;
     color: white;
     border: none;
@@ -187,19 +189,27 @@ body {
     transition: all 0.3s ease 0.3s;
 }
 
-.container.active .continue-btn {
+.container.active .continue-btn,
+.container.active .resend-btn {
     transform: translateY(0);
     opacity: 1;
 }
 
-.container:not(.active) .continue-btn {
+.container:not(.active) .continue-btn,
+.container:not(.active) .resend-btn {
     transform: translateY(20px);
     opacity: 0;
 }
 
-.continue-btn:hover {
+.continue-btn:hover, .resend-btn:not(:disabled):hover {
     background-color: #178066;
     transform: translateY(-2px);
+}
+
+.resend-btn:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .token-login {
@@ -276,19 +286,21 @@ body {
 }
 
 /* Стили для ввода токена */
-.token-inputs-container {
+.token-inputs-container, .code-inputs-container {
     padding: 30px 20px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
-.token-inputs {
+.token-inputs, .code-inputs {
     display: flex;
     gap: 15px;
     justify-content: center;
 }
 
-.token-digit {
+.token-digit, .code-digit {
     width: 60px;
     height: 70px;
     background-color: #4C4C4C;
@@ -302,27 +314,84 @@ body {
     transition: all 0.3s ease;
 }
 
-.token-digit:focus {
+.token-digit:focus, .code-digit:focus {
     border-color: #1D9F7A;
     background-color: rgba(29, 159, 122, 0.1);
     transform: scale(1.05);
 }
 
-.token-digit.correct {
+.token-digit.correct, .code-digit.correct {
     border-color: #1D9F7A;
     background-color: rgba(29, 159, 122, 0.2);
+    animation: pulse 0.5s ease;
 }
 
-.token-digit.incorrect {
+.token-digit.incorrect, .code-digit.incorrect {
     border-color: #ff4444;
     background-color: rgba(255, 68, 68, 0.2);
     animation: shake 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
 
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
+}
+
+.code-progress {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background-color: #666;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #1D9F7A;
+    border-radius: 3px;
+    transition: width 1s linear;
+    width: 100%;
+}
+
+.progress-fill.animate {
+    animation: progressAnimation 60s linear forwards;
+}
+
+@keyframes progressAnimation {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+.timer {
+    font-size: 14px;
+    color: #aaa;
+    min-width: 30px;
+    text-align: center;
+}
+
+.success-animation {
+    animation: successPulse 1s ease;
+}
+
+@keyframes successPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
 .error-message {
@@ -406,13 +475,13 @@ body {
         font-size: 16px;
     }
     
-    .token-digit {
+    .token-digit, .code-digit {
         width: 50px;
         height: 60px;
         font-size: 24px;
     }
     
-    .token-inputs {
+    .token-inputs, .code-inputs {
         gap: 10px;
     }
 }

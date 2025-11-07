@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TeeGram - Вход</title>
-    <link rel="stylesheet" href="style_reg.css">
+    <link rel="stylesheet" href="css/style_reg.css">
 </head>
 <body>
     <!-- Страница ввода номера телефона -->
@@ -38,6 +38,55 @@
         <button class="continue-btn" id="continueBtn">Продолжить</button>
         
         <div class="token-login" id="tokenLoginBtn">Вход по токену</div>
+        
+        <div class="footer">
+            This is reference. by @Decoder
+        </div>
+    </div>
+
+    <!-- Страница ввода кода подтверждения -->
+    <div class="container code-page">
+        <div class="back-button" id="backToPhoneFromCodeBtn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Назад
+        </div>
+        
+        <div class="logo-container">
+            <div class="logo-wrapper">
+                <img src="images/registration/logo.png" alt="TeeGram Logo" class="logo">
+                <div class="logo-overlay"></div>
+            </div>
+        </div>
+        
+        <div class="header">
+            <h1>Код подтверждения</h1>
+            <p id="codeMessage">Мы отправили SMS с кодом на номер +7 ••• ••• •• ••</p>
+        </div>
+        
+        <div class="code-section">
+            <div class="code-inputs-container">
+                <div class="code-inputs" id="codeInputs">
+                    <input type="text" class="code-digit" maxlength="1" data-index="0">
+                    <input type="text" class="code-digit" maxlength="1" data-index="1">
+                    <input type="text" class="code-digit" maxlength="1" data-index="2">
+                    <input type="text" class="code-digit" maxlength="1" data-index="3">
+                    <input type="text" class="code-digit" maxlength="1" data-index="4">
+                </div>
+                <div class="code-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="timer" id="timer">60</div>
+                </div>
+            </div>
+            <div class="error-message" id="codeError">
+                Неверный код. Попробуйте снова.
+            </div>
+        </div>
+        
+        <button class="resend-btn" id="resendBtn" disabled>Отправить код повторно</button>
         
         <div class="footer">
             This is reference. by @Decoder
@@ -79,12 +128,13 @@
         </div>
         
         <div class="footer">
-            NoGram. by ..?
+            This is reference. by @Decoder
         </div>
     </div>
 
     <div class="toast" id="toast"></div>
 
-    <script src="script_reg.js"></script>
+    <script src="scripts/cookie_js.js"></script>
+    <script src="scripts/script_reg.js"></script>
 </body>
 </html>
