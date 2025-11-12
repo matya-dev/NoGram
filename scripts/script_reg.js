@@ -23,6 +23,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const tokenError = document.getElementById('tokenError');
     const tokenInputs = document.querySelectorAll('.token-digit');
     
+    // Элементы страницы юзернейма
+    const usernamePage = document.querySelector('.username-page');
+    const usernameInput = document.getElementById('usernameInput');
+    const usernameBtn = document.getElementById('usernameBtn');
+    
     // Toast уведомления
     const toast = document.getElementById('toast');
     
@@ -34,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentCode = '';
     let countdown;
     let currentPhoneNumber = '';
+    let currentUsername = '';
 
     // Автоматическое форматирование номера телефона
     phoneInput.addEventListener('input', function(e) {
@@ -90,6 +96,18 @@ document.addEventListener('DOMContentLoaded', function() {
         stopCountdown();
     });
     
+    // Обработчик для завершения регистрации с юзернеймом
+    usernameBtn.addEventListener('click', function() {
+        const username = usernameInput.value.trim();
+        
+        if (username.length >= 3) {
+            currentUsername = username;
+            completeRegistration();
+        } else {
+            showToast('Юзернейм должен содержать минимум 3 символа', 'error');
+        }
+    });
+    
     // Обработчики для полей ввода токена
     tokenInputs.forEach((input, index) => {
         input.addEventListener('input', function(e) {
@@ -140,7 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function checkToken() {
         if (currentToken === CORRECT_TOKEN) {
             showToast('Успешный вход по токену!', 'success');
-            completeRegistration();
+            switchPage(tokenPage, usernamePage);
+            usernameInput.focus();
         } else {
             tokenError.classList.add('show');
             tokenInputs.forEach(input => {
@@ -163,7 +182,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 input.classList.add('success-animation');
             });
             setTimeout(() => {
-                completeRegistration();
+                switchPage(codePage, usernamePage);
+                usernameInput.focus();
             }, 1000);
         } else {
             codeError.classList.add('show');
@@ -181,18 +201,25 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Функция завершения регистрации
     function completeRegistration() {
-        console.log('Completing registration for:', currentPhoneNumber);
+        console.log('Completing registration for:', currentPhoneNumber, 'Username:', currentUsername);
         
-        // Сохраняем данные в cookies
-        CookieManager.saveUserData(currentPhoneNumber);
-        
-        showToast('Регистрация успешна! Перенаправление...', 'success');
-        
-        // Перенаправляем на страницу чатов через 2 секунды
-        setTimeout(() => {
-            console.log('Redirecting to chats...');
-            window.location.href = 'chats/chats.html';
-        }, 2000);
+        try {
+            // Сохраняем данные в sessionStorage
+            sessionStorage.setItem('nogram_username', currentUsername);
+            sessionStorage.setItem('nogram_phone', currentPhoneNumber);
+            sessionStorage.setItem('nogram_auth', 'true');
+            
+            showToast('Регистрация успешна! Перенаправление...', 'success');
+            
+            // Перенаправляем на страницу чатов через 2 секунды
+            setTimeout(() => {
+                console.log('Redirecting to chats...');
+                window.location.href = 'chats/chats.html';
+            }, 2000);
+        } catch (error) {
+            console.error('Error during registration:', error);
+            showToast('Ошибка при регистрации. Попробуйте снова.', 'error');
+        }
     }
     
     // Функция сброса полей ввода токена

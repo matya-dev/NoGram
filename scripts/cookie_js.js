@@ -33,32 +33,35 @@ class CookieManager {
 
     // Проверка авторизации
     static isAuthenticated() {
-        const auth = this.getCookie('teegram_auth');
+        const auth = this.getCookie('nogram_auth');
         return auth === 'true';
     }
 
     // Сохранение данных пользователя
-    static saveUserData(phoneNumber) {
-        this.setCookie('teegram_auth', 'true');
-        this.setCookie('teegram_phone', phoneNumber);
-        this.setCookie('teegram_login_time', new Date().toISOString());
-        console.log('User data saved');
+    static saveUserData(phoneNumber, username) {
+        this.setCookie('nogram_auth', 'true');
+        this.setCookie('nogram_phone', phoneNumber);
+        this.setCookie('nogram_username', username);
+        this.setCookie('nogram_login_time', new Date().toISOString());
+        console.log('User data saved:', { phoneNumber, username });
     }
 
     // Получение данных пользователя
     static getUserData() {
         return {
             isAuthenticated: this.isAuthenticated(),
-            phone: this.getCookie('teegram_phone'),
-            loginTime: this.getCookie('teegram_login_time')
+            phone: this.getCookie('nogram_phone'),
+            username: this.getCookie('nogram_username'),
+            loginTime: this.getCookie('nogram_login_time')
         };
     }
 
     // Выход из системы
     static logout() {
-        this.deleteCookie('teegram_auth');
-        this.deleteCookie('teegram_phone');
-        this.deleteCookie('teegram_login_time');
+        this.deleteCookie('nogram_auth');
+        this.deleteCookie('nogram_phone');
+        this.deleteCookie('nogram_username');
+        this.deleteCookie('nogram_login_time');
         window.location.href = '../index.html';
     }
 }

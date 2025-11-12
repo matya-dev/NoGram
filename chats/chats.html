@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeeGram - Чаты</title>
-    <link rel="stylesheet" href="../css/style_chats.css">
+    <title>NoGram - Чаты</title>
+    <link rel="stylesheet" href="css/style_chats.css">
 </head>
 <body>
     <!-- Боковое меню -->
@@ -13,11 +13,11 @@
         <div class="menu-header">
             <div class="menu-user-info">
                 <div class="menu-user-avatar">
-                    <img src="../images/my/myself.png" alt="User">
+                    <img src="images/my/myself.png" alt="User">
                 </div>
                 <div class="menu-user-details">
-                    <div class="menu-username">matya.py</div>
-                    <div class="menu-user-status">Настройки AyuGram</div>
+                    <div class="menu-username" id="menuUsername">self.username_defined_with_string_10</div>
+                    <div class="menu-user-status">by @decoder</div>
                 </div>
             </div>
             <button class="menu-close" id="menuClose">
@@ -31,11 +31,11 @@
             <div class="menu-accounts">
                 <div class="menu-account-item">
                     <div class="account-avatar">
-                        <img src="../images/my/myself.png" alt="matya.py">
+                        <img src="images/my/myself.png" alt="matya.py">
                     </div>
                     <div class="account-info">
-                        <div class="account-name">matya.py</div>
-                        <div class="account-details">sage 7545</div>
+                        <div class="account-name" id="accountUsername">test</div>
+                        <div class="account-details">test</div>
                     </div>
                 </div>
                 <div class="menu-account-item">
@@ -43,11 +43,14 @@
                         <div class="account-avatar-placeholder">E</div>
                     </div>
                     <div class="account-info">
-                        <div class="account-name">euro матвя</div>
-                        <div class="account-details">hello 12.8k</div>
+                        <div class="account-name">test</div>
+                        <div class="account-details">test</div>
                     </div>
                 </div>
             </div>
+
+            <!-- Разделитель -->
+            <div class="menu-divider"></div>
 
             <div class="menu-section">
                 <button class="menu-item">
@@ -57,6 +60,9 @@
                     Добавить аккаунт
                 </button>
             </div>
+
+            <!-- Разделитель -->
+            <div class="menu-divider"></div>
 
             <div class="menu-section">
                 <button class="menu-item">
@@ -74,6 +80,9 @@
                 </button>
             </div>
 
+            <!-- Разделитель -->
+            <div class="menu-divider"></div>
+
             <div class="menu-section">
                 <button class="menu-item">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -90,6 +99,9 @@
                     Создать канал
                 </button>
             </div>
+
+            <!-- Разделитель -->
+            <div class="menu-divider"></div>
 
             <div class="menu-section">
                 <button class="menu-item">
@@ -115,6 +127,9 @@
                 </button>
             </div>
 
+            <!-- Разделитель -->
+            <div class="menu-divider"></div>
+
             <div class="menu-section">
                 <button class="menu-item">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -131,7 +146,18 @@
                 </button>
             </div>
 
+            <!-- Разделитель -->
+            <div class="menu-divider"></div>
+
             <div class="menu-section">
+                <button class="menu-item" id="logoutBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Выйти
+                </button>
                 <button class="menu-item">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="3"/>
@@ -141,6 +167,44 @@
                 </button>
             </div>
         </div>
+    </div>
+
+    <!-- Контекстное меню сообщения -->
+    <div class="message-context-menu" id="messageContextMenu">
+        <div class="context-reactions">
+            <button class="reaction-btn" data-reaction="👍">👍</button>
+            <button class="reaction-btn" data-reaction="❤️">❤️</button>
+        </div>
+        <div class="context-divider"></div>
+        <button class="context-item" id="contextReply">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 10 4 15 9 20"></polyline>
+                <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+            </svg>
+            Ответить
+        </button>
+        <button class="context-item" id="contextForward">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 14 20 9 15 4"></polyline>
+                <path d="M4 20v-7a4 4 0 0 1 4-4h12"></path>
+            </svg>
+            Переслать
+        </button>
+        <button class="context-item" id="contextCopy">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Копировать
+        </button>
+        <div class="context-divider"></div>
+        <button class="context-item delete" id="contextDelete">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Удалить
+        </button>
     </div>
 
     <!-- Основной контейнер чатов -->
@@ -172,36 +236,24 @@
             <div class="chats-list">
                 <div class="chat-item active" data-chat="botfather">
                     <div class="chat-avatar">
-                        <img src="../images/bots/botfather.png" alt="BotFather">
+                        <img src="images/bots/botfather.png" alt="BotFather">
                     </div>
                     <div class="chat-info">
                         <div class="chat-name">BotFather</div>
-                        <div class="last-message">self.test_message1</div>
+                        <div class="last-message">Нажмите /start чтобы начать</div>
                     </div>
-                    <div class="chat-time">12:00</div>
+                    <div class="chat-time">00:00</div>
                 </div>
                 
-                <!-- Дополнительные чаты для демонстрации поиска -->
-                <div class="chat-item" data-chat="support">
+                <div class="chat-item" data-chat="selfwrite">
                     <div class="chat-avatar">
                         <div class="avatar-placeholder">S</div>
                     </div>
                     <div class="chat-info">
-                        <div class="chat-name">Support</div>
-                        <div class="last-message">Чем можем помочь?</div>
+                        <div class="chat-name">self.write</div>
+                        <div class="last-message">online</div>
                     </div>
-                    <div class="chat-time">11:30</div>
-                </div>
-                
-                <div class="chat-item" data-chat="group">
-                    <div class="chat-avatar">
-                        <div class="avatar-placeholder">G</div>
-                    </div>
-                    <div class="chat-info">
-                        <div class="chat-name">Работа</div>
-                        <div class="last-message">Андрей: Готовы отчеты</div>
-                    </div>
-                    <div class="chat-time">10:15</div>
+                    <div class="chat-time">00:00</div>
                 </div>
             </div>
         </div>
@@ -211,7 +263,7 @@
             <div class="chat-header">
                 <div class="chat-partner">
                     <div class="partner-avatar">
-                        <img src="../images/bots/botfather.png" alt="BotFather">
+                        <img src="images/bots/botfather.png" alt="BotFather">
                     </div>
                     <div class="partner-info">
                         <div class="partner-name">BotFather</div>
@@ -221,19 +273,16 @@
             </div>
 
             <div class="messages-container" id="messagesContainer">
-                <div class="message bot-message">
-                    <div class="message-avatar">
-                        <img src="../images/bots/botfather.png" alt="BotFather">
-                    </div>
-                    <div class="message-content">
-                        <div class="message-text">self.test_message1</div>
-                        <div class="message-time">12:00</div>
-                    </div>
-                </div>
+                <!-- Сообщения будут добавляться здесь -->
             </div>
 
             <div class="message-input-container">
-                <div class="message-input-wrapper">
+                <div class="start-button-container" id="startButtonContainer">
+                    <button class="start-button" id="startButton">
+                        <span>/start</span>
+                    </button>
+                </div>
+                <div class="message-input-wrapper" id="messageInputWrapper" style="display: none;">
                     <input type="text" class="message-input" id="messageInput" placeholder="Введите сообщение...">
                     <button class="send-button" id="sendButton">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -245,13 +294,6 @@
         </div>
     </div>
 
-    <!-- Временная кнопка для отладки -->
-    <button onclick="CookieManager.setCookie('teegram_auth', 'true'); location.reload();" 
-            style="position: fixed; bottom: 10px; right: 10px; z-index: 10000; padding: 10px; background: #1D9F7A; color: white; border: none; border-radius: 5px;">
-        Debug: Set Auth Cookie
-    </button>
-
-    <script src="../scripts/cookie_js.js"></script>
-    <script src="../scripts/script_chats.js"></script>
+    <script src="scripts/script_chats.js"></script>
 </body>
 </html>

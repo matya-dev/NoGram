@@ -439,6 +439,15 @@ body {
     background-color: #1D9F7A;
 }
 
+/* Стили для страницы юзернейма */
+.username-page .phone-section {
+    margin-bottom: 20px;
+}
+
+.username-page .phone-row {
+    padding: 15px;
+}
+
 @media (max-width: 480px) {
     body {
         padding: 15px;
