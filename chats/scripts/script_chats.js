@@ -22,6 +22,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.querySelector('.sidebar');
     const chatArea = document.querySelector('.chat-area');
 
+    // Мобильное контекстное меню
+    const mobileContextMenu = document.getElementById('mobileContextMenu');
+    const mobileContextOverlay = document.getElementById('mobileContextOverlay');
+    const mobileContextClose = document.getElementById('mobileContextClose');
+    const mobileContextReply = document.getElementById('mobileContextReply');
+    const mobileContextForward = document.getElementById('mobileContextForward');
+    const mobileContextCopy = document.getElementById('mobileContextCopy');
+    const mobileContextDelete = document.getElementById('mobileContextDelete');
+    const mobileContextSelect = document.getElementById('mobileContextSelect');
+    const mobileReactionBtns = document.querySelectorAll('.mobile-reaction-btn');
+
     let botStarted = false;
     let selectedMessage = null;
     let currentChat = 'botfather';
@@ -31,6 +42,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let touchStartX = 0;
     let touchEndX = 0;
     const minSwipeDistance = 50;
+
+    // Переменные для обработки жестов
+    let lastTap = 0;
+    let tapTimeout;
+    let longPressTimeout;
+    const doubleTapDelay = 300;
+    const longPressDelay = 500;
 
     // Загрузка данных пользователя
     function loadUserData() {
@@ -166,6 +184,231 @@ document.addEventListener('DOMContentLoaded', function() {
         touchEndX = 0;
     }
 
+    // Функции для мобильного контекстного меню
+    function showMobileContextMenu(messageElement) {
+        selectedMessage = messageElement;
+        mobileContextMenu.classList.add('active');
+        mobileContextOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hideMobileContextMenu() {
+        mobileContextMenu.classList.remove('active');
+        mobileContextOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+        selectedMessage = null;
+    }
+
+    // Обработчик двойного тапа
+    function handleDoubleTap(e, messageElement) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Создаем индикатор тапа
+        const rect = messageElement.getBoundingClientRect();
+        const tapIndicator = document.createElement('div');
+        tapIndicator.className = 'message-tap-indicator';
+        tapIndicator.style.left = (e.clientX - rect.left - 40) + 'px';
+        tapIndicator.style.top = (e.clientY - rect.top - 40) + 'px';
+        messageElement.style.position = 'relative';
+        messageElement.appendChild(tapIndicator);
+        
+        // Удаляем индикатор после анимации
+        setTimeout(() => {
+            tapIndicator.remove();
+        }, 400);
+        
+        // Показываем меню реакций
+        showMobileContextMenu(messageElement);
+    }
+
+    // Обработчик долгого нажатия
+    function handleLongPress(messageElement) {
+        messageElement.classList.add('long-press');
+        showMobileContextMenu(messageElement);
+    }
+
+    // Инициализация жестов для сообщений
+    function initMessageGestures(messageElement) {
+        if (!isMobile) return;
+
+        let pressTimer;
+        let isLongPress = false;
+
+        messageElement.addEventListener('touchstart', function(e) {
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                handleLongPress(messageElement);
+            }, longPressDelay);
+        }, { passive: true });
+
+        messageElement.addEventListener('touchend', function(e) {
+            clearTimeout(pressTimer);
+            
+            if (!isLongPress) {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                
+                if (tapLength < doubleTapDelay && tapLength > 0) {
+                    // Двойной тап
+                    handleDoubleTap(e, messageElement);
+                } else {
+                    // Одинарный тап
+                    lastTap = currentTime;
+                }
+            }
+            
+            isLongPress = false;
+            messageElement.classList.remove('long-press');
+        });
+
+        messageElement.addEventListener('touchmove', function(e) {
+            clearTimeout(pressTimer);
+            isLongPress = false;
+        });
+    }
+
+    // Функция добавления реакции к сообщению
+    function addReactionToMessage(messageElement, reaction) {
+        let reactionsContainer = messageElement.querySelector('.message-reactions');
+        
+        if (!reactionsContainer) {
+            reactionsContainer = document.createElement('div');
+            reactionsContainer.className = 'message-reactions';
+            messageElement.querySelector('.message-content').appendChild(reactionsContainer);
+        }
+        
+        // Проверяем, есть ли уже такая реакция
+        const existingReaction = Array.from(reactionsContainer.children).find(
+            child => child.textContent.includes(reaction)
+        );
+        
+        if (existingReaction) {
+            // Если реакция уже есть, увеличиваем счетчик
+            const countSpan = existingReaction.querySelector('.message-reaction-count');
+            if (countSpan) {
+                const currentCount = parseInt(countSpan.textContent) || 1;
+                countSpan.textContent = currentCount + 1;
+            } else {
+                const countSpan = document.createElement('span');
+                countSpan.className = 'message-reaction-count';
+                countSpan.textContent = '2';
+                existingReaction.appendChild(countSpan);
+            }
+            existingReaction.classList.add('added', 'mobile-added');
+        } else {
+            // Если реакции нет, добавляем ее
+            const reactionSpan = document.createElement('span');
+            reactionSpan.className = 'message-reaction added mobile-added';
+            reactionSpan.innerHTML = `${reaction} <span class="message-reaction-count">1</span>`;
+            reactionSpan.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Уменьшаем счетчик или удаляем реакцию
+                const countSpan = this.querySelector('.message-reaction-count');
+                if (countSpan) {
+                    const currentCount = parseInt(countSpan.textContent);
+                    if (currentCount > 1) {
+                        countSpan.textContent = currentCount - 1;
+                    } else {
+                        this.remove();
+                    }
+                } else {
+                    this.remove();
+                }
+            });
+            
+            reactionsContainer.appendChild(reactionSpan);
+        }
+        
+        // Скрываем меню после добавления реакции
+        hideMobileContextMenu();
+    }
+
+    // Функция ответа на сообщение
+    function replyToMessage(messageElement) {
+        const messageText = messageElement.querySelector('.message-text').textContent;
+        messageInput.value = `Ответ на: ${messageText} `;
+        messageInput.focus();
+        hideMobileContextMenu();
+    }
+
+    // Функция пересылки сообщения
+    function forwardMessage(messageElement) {
+        const messageText = messageElement.querySelector('.message-text').textContent;
+        // Здесь можно добавить логику выбора чата для пересылки
+    alert(`self.message "${messageText}"{message}`);
+        hideMobileContextMenu();
+    }
+
+    // Функция копирования сообщения
+    function copyMessage(messageElement) {
+        const messageText = messageElement.querySelector('.message-text').textContent;
+        navigator.clipboard.writeText(messageText).then(() => {
+            // Показываем уведомление о успешном копировании
+            showToast('Сообщение скопировано', 'success');
+        }).catch(err => {
+            console.error('Ошибка копирования: ', err);
+            showToast('Ошибка копирования', 'error');
+        });
+        hideMobileContextMenu();
+    }
+
+    // Функция удаления сообщения
+    function deleteMessage(messageElement) {
+        if (confirm('Удалить это сообщение?')) {
+            messageElement.remove();
+            showToast('Сообщение удалено', 'success');
+        }
+        hideMobileContextMenu();
+    }
+
+    // Функция выбора сообщения
+    function selectMessage(messageElement) {
+        messageElement.classList.toggle('selected');
+        // Здесь можно добавить логику для множественного выбора
+        showToast('Сообщение выбрано', 'success');
+        hideMobileContextMenu();
+    }
+
+    // Функция показа уведомлений
+    function showToast(message, type = 'success') {
+        // Создаем временный toast для мобильных
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background-color: ${type === 'success' ? '#1D9F7A' : '#ff4444'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            transition: transform 0.4s ease;
+            font-weight: bold;
+            max-width: 90%;
+            text-align: center;
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Анимация появления
+        setTimeout(() => {
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+        }, 100);
+        
+        // Автоматическое скрытие
+        setTimeout(() => {
+            toast.style.transform = 'translateX(-50%) translateY(-100px)';
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 400);
+        }, 3000);
+    }
+
     // Инициализация
     function init() {
         if (!checkAuth()) return;
@@ -195,6 +438,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const messageElement = createMessageElement(text, 'user');
         messagesContainer.appendChild(messageElement);
         
+        // Инициализируем жесты для нового сообщения
+        initMessageGestures(messageElement);
+        
         // Очищаем поле ввода
         messageInput.value = '';
         
@@ -207,6 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const botResponse = getBotResponse(text);
                 const botMessageElement = createMessageElement(botResponse, 'bot');
                 messagesContainer.appendChild(botMessageElement);
+                initMessageGestures(botMessageElement);
                 scrollToBottom();
             }, 1000 + Math.random() * 1000);
         } else if (currentChat === 'selfwrite') {
@@ -218,6 +465,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const response = getSelfWriteResponse(text);
                     const responseElement = createMessageElement(response, 'bot');
                     messagesContainer.appendChild(responseElement);
+                    initMessageGestures(responseElement);
                     scrollToBottom();
                 }, 2000 + Math.random() * 1000);
             }, 1000);
@@ -232,6 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Создаем сообщение пользователя с /start
             const userMessageElement = createMessageElement('/start', 'user');
             messagesContainer.appendChild(userMessageElement);
+            initMessageGestures(userMessageElement);
             
             // Скрываем кнопку /start и показываем поле ввода
             startButtonContainer.style.display = 'none';
@@ -245,6 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 const botMessageElement = createMessageElement('self.hello1', 'bot');
                 messagesContainer.appendChild(botMessageElement);
+                initMessageGestures(botMessageElement);
                 scrollToBottom();
             }, 1000);
         }
@@ -274,11 +524,13 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        // Добавляем обработчик контекстного меню
-        messageDiv.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            showContextMenu(e, messageDiv, type);
-        });
+        // Для десктопов добавляем обработчик контекстного меню
+        if (!isMobile) {
+            messageDiv.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                showContextMenu(e, messageDiv, type);
+            });
+        }
 
         return messageDiv;
     }
@@ -387,7 +639,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = sideMenu.classList.contains('active') ? 'hidden' : '';
     }
 
-    // Функция показа контекстного меню
+    // Функция показа контекстного меню (для десктопов)
     function showContextMenu(e, messageElement, messageType) {
         selectedMessage = messageElement;
         
@@ -412,42 +664,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
 
-    // Обработчики для контекстного меню
-    document.getElementById('contextReply').addEventListener('click', function() {
+    // Обработчики для контекстного меню (десктоп)
+    document.getElementById('contextReply')?.addEventListener('click', function() {
         if (selectedMessage) {
-            const messageText = selectedMessage.querySelector('.message-text').textContent;
-            messageInput.value = `Ответ на: ${messageText} `;
-            messageInput.focus();
+            replyToMessage(selectedMessage);
             contextMenu.classList.remove('active');
         }
     });
 
-    document.getElementById('contextForward').addEventListener('click', function() {
+    document.getElementById('contextForward')?.addEventListener('click', function() {
         if (selectedMessage) {
-            alert('Сообщение будет переслано');
+            forwardMessage(selectedMessage);
             contextMenu.classList.remove('active');
         }
     });
 
-    document.getElementById('contextCopy').addEventListener('click', function() {
+    document.getElementById('contextCopy')?.addEventListener('click', function() {
         if (selectedMessage) {
-            const messageText = selectedMessage.querySelector('.message-text').textContent;
-            navigator.clipboard.writeText(messageText).then(() => {
-                console.log('Сообщение скопировано');
-            });
+            copyMessage(selectedMessage);
             contextMenu.classList.remove('active');
         }
     });
 
-    document.getElementById('contextDelete').addEventListener('click', function() {
+    document.getElementById('contextDelete')?.addEventListener('click', function() {
         if (selectedMessage) {
-            selectedMessage.remove();
+            deleteMessage(selectedMessage);
             contextMenu.classList.remove('active');
         }
     });
 
-    // Обработчики для реакций
-    document.querySelectorAll('.reaction-btn').forEach(btn => {
+    // Обработчики для реакций (десктоп)
+    document.querySelectorAll('.reaction-btn')?.forEach(btn => {
         btn.addEventListener('click', function() {
             if (selectedMessage) {
                 const reaction = this.getAttribute('data-reaction');
@@ -457,70 +704,85 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Функция добавления реакции к сообщению
-    function addReactionToMessage(messageElement, reaction) {
-        let reactionsContainer = messageElement.querySelector('.message-reactions');
-        
-        if (!reactionsContainer) {
-            reactionsContainer = document.createElement('div');
-            reactionsContainer.className = 'message-reactions';
-            messageElement.querySelector('.message-content').appendChild(reactionsContainer);
-        }
-        
-        // Проверяем, есть ли уже такая реакция
-        const existingReaction = Array.from(reactionsContainer.children).find(
-            child => child.textContent === reaction
-        );
-        
-        if (existingReaction) {
-            // Если реакция уже есть, удаляем ее
-            existingReaction.remove();
-        } else {
-            // Если реакции нет, добавляем ее
-            const reactionSpan = document.createElement('span');
-            reactionSpan.className = 'message-reaction';
-            reactionSpan.textContent = reaction;
-            reactionSpan.addEventListener('click', function(e) {
-                e.stopPropagation();
-                this.remove();
-            });
-            
-            reactionsContainer.appendChild(reactionSpan);
-        }
-    }
+    // Обработчики для мобильного контекстного меню
+    mobileContextClose?.addEventListener('click', hideMobileContextMenu);
+    mobileContextOverlay?.addEventListener('click', hideMobileContextMenu);
 
-    // Обработчики событий
-    sendButton.addEventListener('click', sendMessage);
+    // Обработчики для действий в мобильном меню
+    mobileContextReply?.addEventListener('click', function() {
+        if (selectedMessage) {
+            replyToMessage(selectedMessage);
+        }
+    });
 
-    messageInput.addEventListener('keypress', function(e) {
+    mobileContextForward?.addEventListener('click', function() {
+        if (selectedMessage) {
+            forwardMessage(selectedMessage);
+        }
+    });
+
+    mobileContextCopy?.addEventListener('click', function() {
+        if (selectedMessage) {
+            copyMessage(selectedMessage);
+        }
+    });
+
+    mobileContextDelete?.addEventListener('click', function() {
+        if (selectedMessage) {
+            deleteMessage(selectedMessage);
+        }
+    });
+
+    mobileContextSelect?.addEventListener('click', function() {
+        if (selectedMessage) {
+            selectMessage(selectedMessage);
+        }
+    });
+
+    // Обработчики для реакций в мобильном меню
+    mobileReactionBtns?.forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (selectedMessage) {
+                const reaction = this.getAttribute('data-reaction');
+                addReactionToMessage(selectedMessage, reaction);
+            }
+        });
+    });
+
+    // Основные обработчики событий
+    sendButton?.addEventListener('click', sendMessage);
+
+    messageInput?.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             sendMessage();
         }
     });
 
-    messageInput.addEventListener('input', function() {
-        sendButton.disabled = this.value.trim() === '';
+    messageInput?.addEventListener('input', function() {
+        if (sendButton) {
+            sendButton.disabled = this.value.trim() === '';
+        }
     });
 
     // Обработчик кнопки /start
-    startButton.addEventListener('click', handleStartButton);
+    startButton?.addEventListener('click', handleStartButton);
 
     // Обработчики для поиска
-    searchInput.addEventListener('input', function() {
+    searchInput?.addEventListener('input', function() {
         searchChats(this.value);
     });
 
-    searchButton.addEventListener('click', function() {
-        searchInput.focus();
+    searchButton?.addEventListener('click', function() {
+        searchInput?.focus();
     });
 
     // Обработчики для меню
-    menuButton.addEventListener('click', toggleMenu);
-    menuClose.addEventListener('click', toggleMenu);
-    menuOverlay.addEventListener('click', toggleMenu);
+    menuButton?.addEventListener('click', toggleMenu);
+    menuClose?.addEventListener('click', toggleMenu);
+    menuOverlay?.addEventListener('click', toggleMenu);
 
     // Выход из системы
-    logoutBtn.addEventListener('click', function() {
+    logoutBtn?.addEventListener('click', function() {
         sessionStorage.clear();
         window.location.href = '../index.html';
     });
@@ -534,8 +796,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Закрытие меню при нажатии ESC
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && sideMenu.classList.contains('active')) {
-            toggleMenu();
+        if (e.key === 'Escape') {
+            if (sideMenu?.classList.contains('active')) {
+                toggleMenu();
+            }
+            if (mobileContextMenu?.classList.contains('active')) {
+                hideMobileContextMenu();
+            }
         }
     });
 
@@ -548,21 +815,24 @@ document.addEventListener('DOMContentLoaded', function() {
             currentChat = this.getAttribute('data-chat');
 
             // Очищаем контейнер сообщений
-            messagesContainer.innerHTML = '';
+            if (messagesContainer) {
+                messagesContainer.innerHTML = '';
+            }
 
             if (currentChat === 'botfather') {
                 botStarted = false;
-                // Показываем кнопку /start
-                startButtonContainer.style.display = 'flex';
-                messageInputWrapper.style.display = 'none';
+                if (startButtonContainer) startButtonContainer.style.display = 'flex';
+                if (messageInputWrapper) messageInputWrapper.style.display = 'none';
             } else if (currentChat === 'selfwrite') {
                 botStarted = true;
-                // Показываем поле ввода
-                startButtonContainer.style.display = 'none';
-                messageInputWrapper.style.display = 'flex';
+                if (startButtonContainer) startButtonContainer.style.display = 'none';
+                if (messageInputWrapper) messageInputWrapper.style.display = 'flex';
                 // Добавляем начальное сообщение для self.write
                 const initialMessage = createMessageElement('Привет! Я тестовый бот. Ты можешь написать мне любое сообщение, мне похуй', 'bot');
-                messagesContainer.appendChild(initialMessage);
+                if (messagesContainer) {
+                    messagesContainer.appendChild(initialMessage);
+                    initMessageGestures(initialMessage);
+                }
             }
 
             // На мобильных устройствах переходим к чату
@@ -596,11 +866,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const chatArea = document.querySelector('.chat-area');
             const sidebar = document.querySelector('.sidebar');
             
-            sidebar.classList.remove('hidden', 'swipe-transition');
-            chatArea.classList.remove('active', 'swipe-transition');
+            if (sidebar) sidebar.classList.remove('hidden', 'swipe-transition');
+            if (chatArea) chatArea.classList.remove('active', 'swipe-transition');
+            
+            // Скрываем мобильное контекстное меню
+            hideMobileContextMenu();
         }
     });
 
     // Инициализация при загрузке
     init();
+
+    // Инициализируем жесты для существующих сообщений
+    setTimeout(() => {
+        document.querySelectorAll('.message').forEach(message => {
+            initMessageGestures(message);
+        });
+    }, 100);
 });

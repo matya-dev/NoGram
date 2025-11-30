@@ -1040,3 +1040,256 @@ body {
         transform: translateX(-100%);
     }
 }
+
+/* Мобильное контекстное меню для сообщений */
+.mobile-context-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #2d2d2d;
+    border-top: 1px solid #404040;
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+    z-index: 1001;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.mobile-context-menu.active {
+    transform: translateY(0);
+}
+
+.mobile-context-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.mobile-context-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-context-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #404040;
+}
+
+.mobile-context-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+}
+
+.mobile-context-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.mobile-context-reactions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.mobile-reaction-btn {
+    background: #404040;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-reaction-btn:hover {
+    background: #4C4C4C;
+    transform: scale(1.1);
+}
+
+.mobile-reaction-btn:active {
+    transform: scale(0.95);
+}
+
+.mobile-context-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mobile-context-action {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    padding: 15px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.2s;
+}
+
+.mobile-context-action:hover {
+    background: #353535;
+}
+
+.mobile-context-action.delete {
+    color: #ff4444;
+}
+
+.mobile-context-action.delete:hover {
+    background: rgba(255, 68, 68, 0.1);
+}
+
+.mobile-context-action svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+}
+
+/* Анимация для реакций */
+@keyframes reactionPop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.message-reaction.mobile-added {
+    animation: reactionPop 0.3s ease;
+}
+
+/* Двойной тап для реакций */
+.message-tap-indicator {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(29, 159, 122, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 100;
+    animation: tapPulse 0.4s ease-out;
+}
+
+@keyframes tapPulse {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+/* Улучшенные стили для реакций на сообщениях */
+.message-reactions {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.message-reaction {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 24px;
+}
+
+.message-reaction:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+.message-reaction.added {
+    background: rgba(29, 159, 122, 0.3);
+    border-color: #1D9F7A;
+}
+
+.message-reaction-count {
+    font-size: 11px;
+    color: #aaa;
+    font-weight: 500;
+}
+
+/* Адаптация контекстного меню для мобильных */
+@media (max-width: 768px) {
+    .message-context-menu {
+        display: none !important;
+    }
+    
+    .message {
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    .message:active {
+        opacity: 0.7;
+        transition: opacity 0.1s;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-context-menu,
+    .mobile-context-overlay {
+        display: none !important;
+    }
+}
+
+/* Улучшенные стили для длинного нажатия */
+.message.long-press {
+    background: rgba(29, 159, 122, 0.1);
+    border-radius: 12px;
+    transition: background-color 0.2s;
+}
+
+/* Индикатор выбора сообщения */
+.message.selected {
+    background: rgba(29, 159, 122, 0.15);
+    border-radius: 12px;
+}

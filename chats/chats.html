@@ -169,7 +169,7 @@
         </div>
     </div>
 
-    <!-- Контекстное меню сообщения -->
+    <!-- Контекстное меню сообщения (для десктопов) -->
     <div class="message-context-menu" id="messageContextMenu">
         <div class="context-reactions">
             <button class="reaction-btn" data-reaction="👍">👍</button>
@@ -205,6 +205,76 @@
             </svg>
             Удалить
         </button>
+    </div>
+
+    <!-- Мобильное контекстное меню -->
+    <div class="mobile-context-overlay" id="mobileContextOverlay"></div>
+    <div class="mobile-context-menu" id="mobileContextMenu">
+        <div class="mobile-context-header">
+            <div class="mobile-context-title">Сообщение</div>
+            <button class="mobile-context-close" id="mobileContextClose">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="mobile-context-reactions">
+            <button class="mobile-reaction-btn" data-reaction="❤️">
+                ❤️
+            </button>
+            <button class="mobile-reaction-btn" data-reaction="👍">
+                👍
+            </button>
+            <button class="mobile-reaction-btn" data-reaction="😂">
+                😂
+            </button>
+            <button class="mobile-reaction-btn" data-reaction="😮">
+                😮
+            </button>
+        </div>
+        
+        <div class="mobile-context-actions">
+            <button class="mobile-context-action" id="mobileContextReply">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 10 4 15 9 20"></polyline>
+                    <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+                </svg>
+                Ответить
+            </button>
+            
+            <button class="mobile-context-action" id="mobileContextForward">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 14 20 9 15 4"></polyline>
+                    <path d="M4 20v-7a4 4 0 0 1 4-4h12"></path>
+                </svg>
+                Переслать
+            </button>
+            
+            <button class="mobile-context-action" id="mobileContextCopy">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Копировать
+            </button>
+            
+            <button class="mobile-context-action" id="mobileContextSelect">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                Выбрать
+            </button>
+            
+            <button class="mobile-context-action delete" id="mobileContextDelete">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Удалить
+            </button>
+        </div>
     </div>
 
     <!-- Основной контейнер чатов -->
@@ -297,6 +367,7 @@
                 </div>
             </div>
         </div>
+    </div>
 
     <script src="scripts/script_chats.js"></script>
 </body>
